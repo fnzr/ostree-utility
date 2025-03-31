@@ -25,7 +25,10 @@ RUN pacman --noconfirm --sync \
     \
     podman \
     ostree \
-    which
+    which \
+    sudo \
+    base-devel \
+    vim
 
 # OSTree: Prepare microcode and initramfs
 RUN moduledir=$(find /usr/lib/modules -mindepth 1 -maxdepth 1 -type d) \
@@ -58,7 +61,10 @@ RUN pacman --noconfirm --sync networkmanager \
  && systemctl mask systemd-networkd-wait-online.service
 
 # Root password
+RUN useradd archlinux --create-home --user-group
 RUN echo "root:ostree" | chpasswd
+RUN echo "archlinux:ostree" | chpasswd
+RUN echo "archlinux ALL=(ALL) ALL" >> /etc/sudoers.d/10-archlinux
 
 # SSHD
 RUN pacman --noconfirm -S openssh \
